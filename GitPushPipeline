@@ -1,0 +1,29 @@
+pipeline {
+    agent { label "${node_name}" }
+    
+    stages {
+        stage('clean workspace'){
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('git clone') {
+            steps {
+              git credentialsId: 'git-ssh', url: '${git_repo}', branch: '${branch_name}'
+            }
+        }
+        stage("Create artifacts or make changes") {
+            steps {
+                sh "touch testfile"
+                sh "git add testfile"
+                sh "git commit -m 'Add testfile from Jenkins Pipeline'"
+            }
+        }
+        stage("Push to Git Repository") {
+            steps {
+                    sh "git push -u origin master"
+            }
+        }
+    }
+}
